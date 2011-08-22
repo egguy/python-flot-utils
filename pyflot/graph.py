@@ -49,7 +49,7 @@ class DuplicateLabelException(Exception):
     label a new series with a label already in use"""
 
 
-LINE_TYPES = ('bars', 'line', 'points')
+LINE_TYPES = ('bars', 'lines', 'points')
 
 
 class Flot(object):
@@ -84,7 +84,16 @@ class Flot(object):
         associated with this graph formatted as JSON, 
         suitable for passing to the ``$.plot`` method.
         """
-        return json.dumps([self.prepare_series(s) for s in self._series])
+        return json.dumps(self.series)
+
+    @property
+    def series(self):
+        """
+        Returns a string with each data series
+        associated with this graph, 
+        suitable for passing to the ``json.dumps`` method.
+        """
+        return [self.prepare_series(s) for s in self._series]
 
     @property
     def options_json(self):
