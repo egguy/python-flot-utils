@@ -123,7 +123,7 @@ class Flot(object):
         method = getattr(self, 'add_series')
         return method(series, label, **{line_type: True})
 
-    def add_series(self, series, label=None, **kwargs):
+    def add_series(self, series, label=None, options=None, **kwargs):
         """
         A series is a list of pairs (2-tuples)
 
@@ -136,16 +136,19 @@ class Flot(object):
                      Alternatively, if the value is `True` the option 
                      for showing the line type {'show': True} will
                      be set for the options for this line type.
+            options: Add option to the graph (like color)
         """
         if not series:
             raise MissingDataException
 
-        #detect time series
-        testatom = series[0][0]
-        if isinstance(testatom, date):
-            series = [(int(time.mktime(ts.timetuple()) * 1000), val) \
-                        for ts, val in series]
-            self._options['xaxis'] = {'mode': 'time'}
+        # Check if itsn't a single value (for pie charts)
+        if type(series) is list:
+            #detect time series
+            testatom = series[0][0]
+            if isinstance(testatom, date):
+                series = [(int(time.mktime(ts.timetuple()) * 1000), val) \
+                            for ts, val in series]
+                self._options['xaxis'] = {'mode': 'time'}
 
         new_series = {'data': series}
         if label and label in [x.get('label', None) for x in self._series]:
@@ -158,6 +161,9 @@ class Flot(object):
                     new_series.update({line_type: kwargs[line_type]})
                 else:
                     new_series.update({line_type: {'show': True}})
+        if options is not None:
+            if type(options) is dict:
+                new_series.update(options)
         self._series.append(new_series)
 
     #def add_time_series(self, series, label=None, **kwargs):
