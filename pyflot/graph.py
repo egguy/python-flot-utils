@@ -138,7 +138,7 @@ class Flot(object):
                      be set for the options for this line type.
             options: Add option to the graph (like color)
         """
-        if not series:
+        if type(series) is not int and not series:
             raise MissingDataException
 
         # Check if itsn't a single value (for pie charts)
